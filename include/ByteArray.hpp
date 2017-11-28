@@ -272,14 +272,14 @@ public:
             {
                 m_d[position + i] = static_cast<uint8_t>(
 //                    SystemTools::shr(number, i * 8)
-                    i >> (i * 8)
+                    number >> (i * 8)
                 );
             }
             else
             {
                 m_d[position + size - i - 1] = static_cast<uint8_t>(
 //                    SystemTools::shr(number, i * 8)
-                    i >> (i * 8)
+                    number >> (i * 8)
                 );
             }
         }
