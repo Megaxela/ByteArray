@@ -1,11 +1,13 @@
+//
+// Created by megaxela on 11/30/17.
+//
+
 #pragma once
 
-#include <cstdint>
-#include <sstream>
-
-#include <iostream>
-#include <memory.h>
-#include <cassert>
+#include <ostream>
+#include <memory>
+#include <cstring>
+#include <mutex>
 
 /**
  * @brief Class, that describes byte array.
@@ -15,50 +17,161 @@ class ByteArray
     /**
      * @brief Stream output function.
      */
-    friend std::ostream &operator<<(std::ostream &ostream, const ByteArray &arr);
+    friend std::ostream &operator<<(std::ostream &ostrea, const ByteArray &arr);
+
+    struct Impl;
+
+    using ImplPtr = std::shared_ptr<Impl>;
+
+    struct Impl
+    {
+        Impl() :
+                m_curr(nullptr),
+                m_currSize(nullptr),
+                m_n(0),
+                m_c(0),
+                m_d(nullptr),
+                m_mutex()
+        {
+
+        }
+
+        ~Impl()
+        {
+            delete[] m_d;
+        }
+
+        ImplPtr copy()
+        {
+            auto result = std::make_shared<Impl>();
+
+            result->m_n = m_n;
+            result->m_c = m_c;
+            result->m_d = new uint8_t[m_c];
+
+            std::memcpy(m_d, result->m_d, sizeof(uint8_t) * m_n);
+
+            return result;
+        }
+
+        static ImplPtr create()
+        {
+            return std::make_shared<Impl>();
+        }
+
+        /**
+         * Logic pointer to data. It can be
+         * different from m_d field, when
+         * ByteArray::cut was applied.
+         * It used for preventing useless copying.
+         */
+        uint8_t* m_curr;
+
+        /**
+         * Logic size. It can be different
+         * from m_n field, when ByteArray::cut
+         * was applied as well.
+         */
+        uint32_t m_currSize;
+
+        /**
+         * Useful data size for m_d;
+         */
+        uint32_t m_n;
+
+        /**
+         * Container size (capacity).
+         */
+        uint32_t m_c;
+
+        /**
+         * @brief Pointer to container.
+         */
+        uint8_t* m_d;
+
+        /**
+         * @brief Multithread safe.
+         */
+        std::mutex m_mutex;
+    };
 
 public:
+
+    using size_t = uint32_t;
+    using byte = uint8_t;
+    using value_type = byte;
+
     /**
      * @brief Byte order enum.
      */
     enum ByteOrder
     {
-        ByteOrder_BigEndian,    ///< Order in decreasing order (Big-endian)
-        ByteOrder_LittleEndian  ///< Order in increasing order (Little-endian)
+        ByteOrder_BigEndian,   ///< Order in decreasing order (Big-endian)
+        ByteOrder_LittleEndian ///< Order in increasing order (Little-endian)
     };
 
     /**
      * @brief Default constructor.
      */
-    ByteArray();
+    ByteArray() :
+            m_impl(nullptr)
+    {
+
+    }
 
     /**
      * @brief Constructor with initial capacity.
      * @param capacity Initial capacity.
      */
-    explicit ByteArray(uint32_t capacity);
+    explicit ByteArray(size_t capacity) :
+            m_impl(nullptr)
+    {
+        changeCapacity(capacity);
+    }
 
     /**
      * @brief Constructor from byte array.
      * @param array Byte array.
      * @param size Byte array size.
      */
-    ByteArray(const uint8_t* array, uint32_t size);
+    ByteArray(const byte* array, size_t size) :
+            m_impl(nullptr)
+    {
+        if (size > 0)
+        {
+            m_impl = Impl::create();
+
+            std::lock_guard<std::mutex> lock(m_impl->m_mutex);
+            m_impl->m_d = new uint8_t[size];
+            memcpy(m_impl->m_d, array, sizeof(byte) * size);
+        }
+    }
 
     /**
      * @brief Copy constructor.
      */
-    ByteArray(const ByteArray &rhs);
+    ByteArray(const ByteArray& rhs) :
+            m_impl(rhs.m_impl)
+    {
+
+    }
 
     /**
      * @brief Move constructor.
      */
-    ByteArray(ByteArray&& rhs) noexcept;
+    ByteArray(ByteArray&& rhs) noexcept :
+            m_impl(rhs.m_impl)
+    {
+        rhs.m_impl = nullptr;
+    }
 
     /**
      * @brief Destructor.
      */
-    ~ByteArray();
+    ~ByteArray()
+    {
+        m_impl = nullptr;
+    }
 
     /**
      * @brief Method for appending other byte array.
@@ -74,37 +187,7 @@ public:
     void append(const uint8_t* array, uint32_t size);
 
     template<typename T>
-    void appendPart(T number, uint32_t size, ByteOrder order = ByteOrder_BigEndian)
-    {
-        assert(sizeof(T) >= size);
-
-        if (m_n + size > m_c)
-        {
-            changeCapacity(m_n + size);
-        }
-
-        for (uint32_t i = 0;
-             i < size;
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-                m_d[m_n + i] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-            else
-            {
-                m_d[m_n + size - i - 1] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-        }
-
-        m_n += size;
-    }
+    void appendPart(T number, uint32_t size, ByteOrder order = ByteOrder_BigEndian);
 
     /**
      * @brief Template method for adding several
@@ -114,56 +197,13 @@ public:
      * @param order Byte order.
      */
     template<typename T>
-    void appendMultiple(T number, uint32_t count, ByteOrder order = ByteOrder_BigEndian)
-    {
-        if (m_n + sizeof(T) * count > m_c)
-        {
-            changeCapacity(m_n + sizeof(T) * count);
-        }
-
-        for (int i = 0;
-             i < static_cast<int>(count);
-             ++i)
-        {
-            append(number, order);
-        }
-    }
+    void appendMultiple(T number, uint32_t count, ByteOrder order = ByteOrder_BigEndian);
 
     /**
      * @brief Template method for adding number to the end.
      */
     template<typename T>
-    void append(T number, ByteOrder order = ByteOrder_BigEndian)
-    {
-        assert(order == ByteOrder_LittleEndian || order == ByteOrder_BigEndian);
-
-        if (m_n + sizeof(T) > m_c)
-        {
-            changeCapacity(m_n + sizeof(T));
-        }
-
-        for (int i = 0;
-             i < static_cast<int>(sizeof(T));
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-                m_d[m_n + i] = static_cast<uint8_t>(
-//                    SystemTools::shr<T>(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-            else
-            {
-                m_d[m_n + sizeof(T) - i - 1] = static_cast<uint8_t>(
-//                    SystemTools::shr<T>(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-        }
-
-        m_n += sizeof(T);
-    }
+    void append(T number, ByteOrder order = ByteOrder_BigEndian);
 
     /**
      * @brief Method for inserting byte array to specified position.
@@ -188,156 +228,21 @@ public:
      * @param order Byte order.
      */
     template<typename T>
-    void insert(uint32_t position, T number, ByteOrder order = ByteOrder_BigEndian)
-    {
-        assert(position < m_n);
-
-        if (m_n + sizeof(T) > m_c)
-        {
-            changeCapacity(m_n + 4);
-        }
-
-        for (uint32_t index = m_n - 1; index >= position; --index)
-        {
-            m_d[index + sizeof(T)] = m_d[index];
-        }
-
-        for (int i = 0; i < sizeof(T); ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-                m_d[position + i] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-            else
-            {
-                m_d[position + sizeof(T) - i - 1] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-        }
-
-        m_n += sizeof(T);
-    }
+    void insert(uint32_t position, T number, ByteOrder order = ByteOrder_BigEndian);
 
     template<typename T>
-    void set(uint32_t position, T number, ByteOrder order = ByteOrder_BigEndian)
-    {
-        assert(position + (sizeof(T) - 1) < m_n);
-        for (int i = 0;
-             i < static_cast<int>(sizeof(T));
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-                m_d[position + i] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-            else
-            {
-                m_d[position + sizeof(T) - i - 1] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    number >> (i * 8)
-                );
-            }
-        }
-    }
+    void set(uint32_t position, T number, ByteOrder order = ByteOrder_BigEndian);
 
-    void set(uint32_t position, const ByteArray& byteArray)
-    {
-        assert(position + byteArray.size() - 1 < m_n);
-
-        for (uint32_t i = 0; i < byteArray.size(); ++i)
-        {
-            m_d[position + i] = byteArray[i];
-        }
-    }
+    void set(uint32_t position, const ByteArray& byteArray);
 
     template<typename T>
-    void setPart(uint32_t position, T number, uint32_t size, ByteOrder order = ByteOrder_BigEndian)
-    {
-        assert(sizeof(T) >= size);
-        assert(position + (size - 1) < m_n);
-
-        for (uint32_t i = 0;
-             i < size;
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-                m_d[position + i] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    i >> (i * 8)
-                );
-            }
-            else
-            {
-                m_d[position + size - i - 1] = static_cast<uint8_t>(
-//                    SystemTools::shr(number, i * 8)
-                    i >> (i * 8)
-                );
-            }
-        }
-    }
+    void setPart(uint32_t position, T number, uint32_t size, ByteOrder order = ByteOrder_BigEndian);
 
     template<typename T>
-    T read(uint32_t position, ByteOrder order = ByteOrder_BigEndian) const
-    {
-        assert(order == ByteOrder_LittleEndian || order == ByteOrder_BigEndian);
-        assert((position + sizeof(T)) <= length());
-
-        T value = T(0);
-
-        for (int i = 0;
-             i < static_cast<int>(sizeof(T));
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-//                value |= SystemTools::shl<T>(m_d[position + i], i * 8);
-                value |= m_d[position + i] << (i * 8);
-            }
-            else
-            {
-//                value |= SystemTools::shl<T>(m_d[position + sizeof(T) - i - 1], i * 8);
-                value |= m_d[position + sizeof(T) - i - 1] << (i * 8);
-            }
-        }
-
-        return value;
-    }
+    T read(uint32_t position, ByteOrder order = ByteOrder_BigEndian) const;
 
     template<typename T>
-    T readPart(uint32_t position, uint8_t size, ByteOrder order = ByteOrder_BigEndian) const
-    {
-        assert(order == ByteOrder_LittleEndian || order == ByteOrder_BigEndian);
-        assert((position + size) <= length());
-
-        T value = T(0);
-
-        for (int i = 0;
-             i < static_cast<int>(size);
-             ++i)
-        {
-            if (order == ByteOrder_LittleEndian)
-            {
-//                value |= SystemTools::shl<T>(m_d[position + i], i * 8);
-                value |= m_d[position + i] << (i * 8);
-            }
-            else
-            {
-//                value |= SystemTools::shl<T>(m_d[position + size - i - 1], i * 8);
-                value |= m_d[position + size - i - 1] << (i * 8);
-            }
-        }
-
-        return value;
-    }
+    T readPart(uint32_t position, uint8_t size, ByteOrder order = ByteOrder_BigEndian) const;
 
     void replace(uint32_t position, uint32_t size, const ByteArray& data);
 
@@ -381,19 +286,8 @@ public:
 
 private:
 
-    /**
-     * Pointer to data.
-     */
-    uint8_t *m_d;
-
-    /**
-     * Useful data size.
-     */
-    uint32_t m_n;
-
-    /**
-     * Container size (capacity).
-     */
-    uint32_t m_c;
+    ImplPtr m_impl;
 };
+
+
 
