@@ -1,0 +1,85 @@
+
+#include <gtest/gtest.h>
+#include <ByteArray.hpp>
+
+TEST(Constructors, Default)
+{
+    ByteArray b;
+
+    ASSERT_EQ(b.size(), 0);
+    ASSERT_EQ(b.capacity(), 0);
+}
+
+TEST(Constructors, InitialCapacity)
+{
+    ByteArray b(1024);
+
+    ASSERT_EQ(b.size(), 0);
+    ASSERT_EQ(b.length(), 0);
+    ASSERT_EQ(b.capacity(), 1024);
+}
+
+TEST(Constructors, FromByteArray)
+{
+    uint8_t byteArray[32] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    };
+
+    ByteArray b(byteArray, 32);
+
+    ASSERT_EQ(b.size(), 32);
+    ASSERT_EQ(b.length(), 32);
+    ASSERT_EQ(b.capacity(), 32);
+
+    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    {
+        ASSERT_EQ(byteArray[i], b[i]);
+    }
+}
+
+TEST(Constructors, Copy)
+{
+    uint8_t byteArray[32] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    };
+
+    ByteArray b(byteArray, 32);
+
+    ByteArray copy = b;
+
+    ASSERT_EQ(b, copy);
+
+    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    {
+        ASSERT_EQ(b[i], copy[i]);
+    }
+}
+
+TEST(Constructors, Move)
+{
+    uint8_t byteArray[32] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    };
+
+    ByteArray m(byteArray, 32);
+
+    ByteArray b = std::move(m);
+
+    ASSERT_EQ(b.size(), 32);
+    ASSERT_EQ(b.length(), 32);
+    ASSERT_EQ(b.capacity(), 32);
+
+    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    {
+        ASSERT_EQ(byteArray[i], b[i]);
+    }
+}
