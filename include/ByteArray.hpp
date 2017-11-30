@@ -8,6 +8,8 @@
 #include <memory>
 #include <cstring>
 #include <mutex>
+#include <algorithm>
+#include <sstream>
 
 /**
  * @brief Class, that describes byte array.
