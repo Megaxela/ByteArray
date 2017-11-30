@@ -32,3 +32,5 @@ add_library(ByteArray
         ${SOURCE_FILES}
         ${INCLUDE_FILES}
 )
+
+set_target_properties(ByteArray PROPERTIES LINKER_LANGUAGE CXX)
