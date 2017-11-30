@@ -116,11 +116,13 @@ private:
     {
         Impl() :
                 m_c(0),
-                m_d(nullptr),
-                m_mutex()
+                m_d(nullptr)
         {
 
         }
+
+        Impl(const Impl&) = delete;
+        Impl& operator=(const Impl&) = delete;
 
         ~Impl()
         {
@@ -141,11 +143,6 @@ private:
          * @brief Pointer to container.
          */
         byte* m_d;
-
-        /**
-         * @brief Multithread safe.
-         */
-        std::mutex m_mutex;
     };
 
 public:
