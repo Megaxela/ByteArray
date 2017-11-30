@@ -26,8 +26,7 @@ set(INCLUDE_FILES
         include/ByteArray.hpp
 )
 
-set(SOURCE_FILES
-        tests/main.cpp)
+set(SOURCE_FILES)
 
 add_library(ByteArray
         ${SOURCE_FILES}
