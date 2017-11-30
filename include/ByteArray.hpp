@@ -403,13 +403,13 @@ public:
         {
             for (size_type index = m_n - 1; index >= position; --index)
             {
-                m_curr[index + array.length()] = m_impl->m_d[index];
+                m_curr[index + array.length()] = m_curr[index];
             }
         }
 
         for (size_type index = 0; index < array.length(); ++index)
         {
-            m_curr[index + position] = array.m_impl->m_d[index];
+            m_curr[index + position] = array.m_curr[index];
         }
 
         m_n += array.length();
@@ -446,7 +446,7 @@ public:
         {
             for (size_type index = m_n - 1; index >= position; --index)
             {
-                m_curr[index + size] = m_impl->m_d[index];
+                m_curr[index + size] = m_curr[index];
             }
         }
 
@@ -673,11 +673,11 @@ public:
         {
             if (order == ByteOrder_LittleEndian)
             {
-                value |= shl<T>(m_impl->m_d[position + i], static_cast<uint8_t>(i * 8));
+                value |= shl<T>(m_curr[position + i], static_cast<uint8_t>(i * 8));
             }
             else
             {
-                value |= shl<T>(m_impl->m_d[position + size - i - 1], static_cast<uint8_t>(i * 8));
+                value |= shl<T>(m_curr[position + size - i - 1], static_cast<uint8_t>(i * 8));
             }
         }
 
@@ -884,7 +884,7 @@ public:
             return nullptr;
         }
 
-        return m_impl->m_d;
+        return m_curr;
     }
 
     ByteArray reversed() const
