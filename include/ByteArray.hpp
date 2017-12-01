@@ -766,6 +766,8 @@ public:
                 return static_cast<uint8_t>(symbol - 'A' + 10);
             else if(symbol >= 'a' && symbol <= 'f')
                 return static_cast<uint8_t>(symbol - 'a' + 10);
+
+            throw std::invalid_argument(std::string("Symbol \"") + symbol + "\" is not hex.");
         };
 
         if (!isStrict)
