@@ -20,8 +20,6 @@ if (${BYTEARRAY_BUILD_TESTS})
     add_subdirectory(tests)
 endif()
 
-include_directories(include)
-
 set(INCLUDE_FILES
         include/ByteArray.hpp
 )
@@ -31,6 +29,10 @@ set(SOURCE_FILES)
 add_library(ByteArray
         ${SOURCE_FILES}
         ${INCLUDE_FILES}
+)
+
+target_include_directories(ByteArray PUBLIC
+        include
 )
 
 set_target_properties(ByteArray PROPERTIES LINKER_LANGUAGE CXX)
