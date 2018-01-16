@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 if (${BYTEARRAY_BUILD_TESTS})
     add_subdirectory(tests)
+    add_subdirectory(benchmark)
 endif()
 
 set(INCLUDE_FILES
