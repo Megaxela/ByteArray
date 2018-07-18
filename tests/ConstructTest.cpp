@@ -1,21 +1,29 @@
 
 #include <gtest/gtest.h>
-#include <ByteArray.hpp>
+#include <bytearray.hpp>
 
 TEST(Constructors, Default)
 {
-    ByteArray b;
+    bytearray b{};
 
     ASSERT_EQ(b.size(), 0);
     ASSERT_EQ(b.capacity(), 0);
 }
 
+TEST(Constructors, InitialFill)
+{
+    bytearray b(1024);
+
+    ASSERT_EQ(b.size(), 1024);
+    ASSERT_EQ(b.capacity(), 1024);
+}
+
 TEST(Constructors, InitialCapacity)
 {
-    ByteArray b(1024);
+    bytearray b{};
+    b.reserve(1024);
 
     ASSERT_EQ(b.size(), 0);
-    ASSERT_EQ(b.length(), 0);
     ASSERT_EQ(b.capacity(), 1024);
 }
 
@@ -28,15 +36,14 @@ TEST(Constructors, FromByteArray)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    ByteArray b(byteArray, 32);
+    bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
 
     ASSERT_EQ(b.size(), 32);
-    ASSERT_EQ(b.length(), 32);
     ASSERT_EQ(b.capacity(), 32);
 
-    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    for (decltype(b)::size_type i = 0; i < b.size(); ++i)
     {
-        ASSERT_EQ(byteArray[i], b[i]);
+        ASSERT_EQ(byteArray[i], uint8_t(b[i]));
     }
 }
 
@@ -49,13 +56,11 @@ TEST(Constructors, Copy)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    ByteArray b(byteArray, 32);
+    bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
 
-    ByteArray copy = b;
+    bytearray copy = b;
 
-    ASSERT_EQ(b, copy);
-
-    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    for (decltype(b)::size_type i = 0; i < b.size(); ++i)
     {
         ASSERT_EQ(b[i], copy[i]);
     }
@@ -70,16 +75,15 @@ TEST(Constructors, Move)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    ByteArray m(byteArray, 32);
+    bytearray m(reinterpret_cast<std::byte*>(byteArray), 32);
 
-    ByteArray b = std::move(m);
+    auto b = std::move(m);
 
     ASSERT_EQ(b.size(), 32);
-    ASSERT_EQ(b.length(), 32);
     ASSERT_EQ(b.capacity(), 32);
 
-    for (ByteArray::size_type i = 0; i < b.size(); ++i)
+    for (decltype(b)::size_type i = 0; i < b.size(); ++i)
     {
-        ASSERT_EQ(byteArray[i], b[i]);
+        ASSERT_EQ(byteArray[i], uint8_t(b[i]));
     }
 }

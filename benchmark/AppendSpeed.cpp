@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include <ByteArray.hpp>
+#include <bytearray.hpp>
 
 
 template<typename T>
@@ -9,15 +9,15 @@ static void append(benchmark::State& state)
 
     auto count = resultSize / sizeof(T);
 
-    ByteArray byteArray(static_cast<ByteArray::size_type>(resultSize));
+    bytearray array;
 
     for (auto _ : state)
     {
-        byteArray.clear();
+        array.clear();
 
         for (int i = 0; i < count; ++i)
         {
-            byteArray.append<T>(T(0xAA));
+            array.push_back<T>(T(0xAA));
         }
     }
 
@@ -31,13 +31,13 @@ static void appendMultiple(benchmark::State& state)
 
     auto count = resultSize / sizeof(T);
 
-    ByteArray byteArray(static_cast<ByteArray::size_type>(resultSize));
+    bytearray array;
 
     for (auto _ : state)
     {
-        byteArray.clear();
+        array.clear();
 
-        byteArray.appendMultiple<T>(T(0xAA), count);
+        array.push_back_multiple<T>(T(0xAA), count);
     }
 
     state.SetComplexityN(resultSize);
@@ -45,18 +45,18 @@ static void appendMultiple(benchmark::State& state)
 
 static void appendByteArray(benchmark::State& state)
 {
-    auto size = state.range(0);
+    auto size = static_cast<size_t>(state.range(0));
 
-    ByteArray data(static_cast<ByteArray::size_type>(size));
+    std::vector<std::byte> data;
 
-    data.appendMultiple<uint8_t>(0x00, static_cast<ByteArray::size_type>(size));
+    data.resize(size, std::byte(0x00));
 
-    ByteArray byteArray(static_cast<ByteArray::size_type>(size));
+    bytearray array;
 
     for (auto _ : state)
     {
-        byteArray.clear();
-        byteArray.append(data);
+        array.clear();
+        array.push_back_multiple(data.begin(), data.end());
     }
 
     state.SetComplexityN(size);
@@ -71,14 +71,14 @@ static void appendPart(benchmark::State& state)
 
     auto count = size / part;
 
-    ByteArray byteArray(static_cast<ByteArray::size_type>(size));
+    bytearray array;
 
     for (auto _ : state)
     {
-        byteArray.clear();
+        array.clear();
         for (auto i = 0; i < count; ++i)
         {
-            byteArray.appendPart(data, static_cast<ByteArray::size_type>(part));
+            array.push_back_part<uint64_t>(data, static_cast<std::size_t>(part));
         }
     }
 

@@ -6,14 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
         googletest/googletest/include
-        ../include
 )
 
 file(GLOB SOURCE_FILES *.cpp)
 
-add_executable(ByteArrayTests ${SOURCE_FILES} ConstructTest.cpp AppendTest.cpp InsertTest.cpp SerializationTest.cpp UtilitiesTest.cpp ReadTest.cpp)
+add_executable(ByteArrayTests ${SOURCE_FILES})
 
 target_link_libraries(ByteArrayTests
-        ByteArray
+        bytearray
         gtest
 )

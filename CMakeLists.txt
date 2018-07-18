@@ -1,39 +1,23 @@
-cmake_minimum_required(VERSION 3.8)
-project(ByteArray)
+cmake_minimum_required(VERSION 3.11)
+project(bytearray)
 
 option(BYTEARRAY_BUILD_TESTS "Build tests" Off)
 
-set(CMAKE_CXX_STANDARD 11)
-
-#set(CMAKE_CXX_FLAGS "-Werror \
-#                     -ansi \
-#                     -pedantic \
-#                     -Wabi \
-#                     -Wall \
-#                     -Wextra \
-#                     -Weffc++ \
-#                     -Woverloaded-virtual \
-#                     -Winit-self \
-#                     -Wunreachable-code ")
+set(CMAKE_CXX_STANDARD 17)
 
 if (${BYTEARRAY_BUILD_TESTS})
     add_subdirectory(tests)
     add_subdirectory(benchmark)
 endif()
 
-set(INCLUDE_FILES
-        include/ByteArray.hpp
+add_library(bytearray STATIC
+    include/bytearray_processor.hpp
+    include/bytearray.hpp
+    include/bytearray_view.hpp
 )
 
-set(SOURCE_FILES)
-
-add_library(ByteArray
-        ${SOURCE_FILES}
-        ${INCLUDE_FILES}
+target_include_directories(bytearray
+    PUBLIC include
 )
 
-target_include_directories(ByteArray PUBLIC
-        include
-)
-
-set_target_properties(ByteArray PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(bytearray PROPERTIES LINKER_LANGUAGE CXX)

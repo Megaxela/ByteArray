@@ -1,85 +1,84 @@
 #include <gtest/gtest.h>
-#include <ByteArray.hpp>
+#include <bytearray.hpp>
+#include <bytearray_view.hpp>
 
-TEST(Utilities, Reverse)
+TEST(Utils, LoadFromHexString)
 {
-    ByteArray empty;
+    bytearray array{};
 
-    ByteArray reversedEmpty = empty.reversed();
-
-    ASSERT_EQ(reversedEmpty.length(), 0);
-    ASSERT_EQ(reversedEmpty.capacity(), 0);
-
-    uint8_t data[] = {
-        0xDE, 0xAD, 0xBE, 0xEF,
-        0xCA, 0xFE, 0xD0, 0x0D
+    uint8_t expect[] = {
+        0xAA, 0xFF, 0xEE, 0xDD
     };
 
-    ByteArray byteArray(data, 8);
+    ASSERT_TRUE(array.load_from_hex(std::string_view("AAFFEEDD")));
 
-    ByteArray reversed = byteArray.reversed();
+    ASSERT_EQ(array.size(), 4);
 
-    for (ByteArray::size_type i = 0; i < byteArray.size(); ++i)
+    for (decltype(array)::size_type i = 0; i < array.size(); ++i)
     {
-        ASSERT_EQ(reversed[i], data[8 - i - 1]);
+        ASSERT_EQ(uint8_t(array[i]), expect[i]);
+    }
+
+    ASSERT_TRUE(array.load_from_hex(std::string_view("AA FFEEDD")));
+
+    ASSERT_EQ(array.size(), 4);
+
+    for (decltype(array)::size_type i = 0; i < array.size(); ++i)
+    {
+        ASSERT_EQ(uint8_t(array[i]), expect[i]);
+    }
+
+    ASSERT_TRUE(array.load_from_hex(std::string_view("AA FF EE DD")));
+
+    ASSERT_EQ(array.size(), 4);
+
+    for (decltype(array)::size_type i = 0; i < array.size(); ++i)
+    {
+        ASSERT_EQ(uint8_t(array[i]), expect[i]);
+    }
+
+    ASSERT_FALSE(array.load_from_hex(std::string_view("AAFFEE WW")));
+
+    ASSERT_EQ(array.size(), 4);
+
+    for (decltype(array)::size_type i = 0; i < array.size(); ++i)
+    {
+        ASSERT_EQ(uint8_t(array[i]), expect[i]);
     }
 }
 
-TEST(Utilities, Mid)
+TEST(Utils, Literal)
 {
-    uint8_t data[] = {
-        0x11, 0x22, 0x33, 0x44,
-        0x55, 0x66, 0x77, 0x88,
-        0x99, 0xAA, 0xBB, 0xCC
+    auto ba = "DEADBEEF"_ba;
+
+    uint8_t expect[] = {
+        0xDE, 0xAD, 0xBE, 0xEF
     };
 
-    ByteArray byteArray(data, 12);
+    ASSERT_EQ(ba.size(), 4);
 
-    const ByteArray mid = byteArray.mid(4, 4);
-
-    ASSERT_EQ(mid.length(), 4);
-
-    for (ByteArray::size_type i = 0; i < mid.length(); ++i)
+    for (decltype(ba)::size_type i = 0; i < ba.size(); ++i)
     {
-        ASSERT_EQ(mid[i], data[4 + i]);
+        ASSERT_EQ(uint8_t(ba[i]), expect[i]);
     }
 }
 
-
-TEST(Utilities, Cut)
+TEST(Utils, ToString)
 {
-    uint8_t data[] = {
-        0x11, 0x22, 0x33, 0x44,
-        0x55, 0x66, 0x77, 0x88,
-        0x99, 0xAA, 0xBB, 0xCC
-    };
+    auto ba = "DEADBEEF"_ba;
 
-    ByteArray byteArray(data, 12);
+    auto string = std::to_string(ba);
 
-    const ByteArray cut = byteArray.cut(4, 8);
-
-    ASSERT_EQ(cut.length(), 4);
-
-    for (ByteArray::size_type i = 0; i < cut.length(); ++i)
-    {
-        ASSERT_EQ(cut[i], data[4 + i]);
-    }
+    ASSERT_EQ(string, "DEADBEEF");
 }
 
-TEST(Utilities, Clear)
+TEST(Utils, ViewToString)
 {
-    uint8_t data[] = {
-        0x11, 0x22, 0x33, 0x44,
-        0x55, 0x66, 0x77, 0x88,
-        0x99, 0xAA, 0xBB, 0xCC
-    };
+    auto ba = "DEADBEEF"_ba;
 
-    ByteArray byteArray(data, 12);
+    bytearray_view view(ba, 1, 2);
 
-    ASSERT_EQ(byteArray.length(), 12);
+    auto string = std::to_string(view);
 
-    byteArray.clear();
-
-    ASSERT_EQ(byteArray.length(), 0);
-    ASSERT_TRUE(byteArray.empty());
+    ASSERT_EQ(string, "ADBE");
 }

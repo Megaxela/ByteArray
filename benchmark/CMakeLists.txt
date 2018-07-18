@@ -8,11 +8,12 @@ endif()
 add_executable(ByteArrayBenchmark
         main.cpp
         AppendSpeed.cpp
-        CreationAndCopy.cpp
-)
+        MoveCopy.cpp
+        InsertSpeed.cpp
+        )
 
 target_link_libraries(ByteArrayBenchmark
-    ByteArray
+    bytearray
     benchmark
     gtest
 )
