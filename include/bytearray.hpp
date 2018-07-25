@@ -47,7 +47,12 @@ public:
     /**
      * @brief Default copy constructor.
      */
-    bytearray(const bytearray<Allocator>& rhs) = default;
+    bytearray(const bytearray<Allocator>& rhs) :
+        processor(*static_cast<vector*>(this)),
+        vector(rhs.container())
+    {
+        
+    }
 
     /**
      * @brief Constructor with initial size.
