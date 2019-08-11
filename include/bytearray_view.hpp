@@ -8,7 +8,7 @@
  * based values.
  * @tparam Allocator Allocator.
  */
-template<typename ValueType, typename Allocator>
+template< typename ValueType, typename Allocator = std::allocator<ValueType> >
 class bytearray_view
 {
     using container = bytearray_processor<ValueType, Allocator>;
@@ -546,6 +546,16 @@ public:
     bool empty() const
     {
         return m_size == 0;
+    }
+
+    const ValueType* data() const
+    {
+        return m_byteArray.container().data() + m_start;
+    }
+
+    ValueType* data()
+    {
+        return m_byteArray.container().data() + m_start;
     }
 
     /**
