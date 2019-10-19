@@ -8,6 +8,7 @@
 #include <cassert>
 #include <iomanip>
 #include <algorithm>
+#include <sstream>
 
 enum class endianness
 {
