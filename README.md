@@ -27,16 +27,16 @@ this project as submodule and link it to target.
 
 Usage of `bytearray_processor`:
 ```cpp
-#include <bytearray_processor.hpp>
+#include <ba/bytearray_processor.hpp>
 
 int main(int argc, char** argv)
 {
     // You may use any numerical type, that has 1 byte size.
     std::vector<std::byte> some_vector;
     
-    bytearray_processor processor(some_vector);
+    ba::bytearray_processor processor(some_vector);
     
-    processor.push_back<uint32_t>(0xDEADBEEF, endianness::little);
+    processor.push_back<uint32_t>(0xDEADBEEF, ba::endianness::little);
     
     /* Output:
      * ByteArray({
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
      */
     std::cout 
         << std::boolalpha 
-        << (processor.read<uint32_t>(0, endianness::little) == 0xDEADBEEF) 
+        << (processor.read<uint32_t>(0, ba::endianness::little) == 0xDEADBEEF) 
         << std::endl;
         
     /* Output:
@@ -73,15 +73,15 @@ int main(int argc, char** argv)
 You may replace
 ```cpp
 std::vector<std::byte> some_vector;
-bytearray_processor processor(some_vector);
+ba::bytearray_processor processor(some_vector);
 ```
-with `bytearray`. You will be able to access vector with `container` method.
+with `ba::bytearray`. You will be able to access vector with `container` method.
 
-Usage of `bytearray_view`:
+Usage of `ba::bytearray_view`:
 
 ```cpp
-#include <bytearray.hpp>
-#include <bytearray_view.hpp>
+#include <ba/bytearray.hpp>
+#include <ba/bytearray_view.hpp>
 
 int main()
 {
@@ -90,7 +90,7 @@ int main()
     // array.load_from_hex("DEADBEEF");
     auto array = "DEADBEEF"_ba;
     
-    bytearray_view view(array, 1, 2);
+    ba::bytearray_view view(array, 1, 2);
     
     /* Output:
      * ADBE
