@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
-#include <bytearray.hpp>
-#include <bytearray_view.hpp>
+#include <ba/bytearray.hpp>
+#include <ba/bytearray_view.hpp>
 
 TEST(Utils, LoadFromHexString)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     uint8_t expect[] = {
         0xAA, 0xFF, 0xEE, 0xDD
@@ -76,7 +76,7 @@ TEST(Utils, ViewToString)
 {
     auto ba = "DEADBEEF"_ba;
 
-    bytearray_view view(ba, 1, 2);
+    ba::bytearray_view view(ba, 1, 2);
 
     auto string = std::to_string(view);
 

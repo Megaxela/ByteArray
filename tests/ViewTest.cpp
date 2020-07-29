@@ -1,30 +1,30 @@
 #include <gtest/gtest.h>
-#include <bytearray.hpp>
-#include <bytearray_view.hpp>
+#include <ba/bytearray.hpp>
+#include <ba/bytearray_view.hpp>
 
 TEST(View, ConstructorByteArray)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
-    bytearray_view view(array);
+    ba::bytearray_view view(array);
 }
 
 TEST(View, ConstructorByteArrayProcessor)
 {
     std::vector<std::byte> container;
 
-    bytearray_processor processor(container);
+    ba::bytearray_processor processor(container);
 
-    bytearray_view view(processor);
+    ba::bytearray_view view(processor);
 }
 
 TEST(View, IndexOperator)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
+    ba::bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
 
     uint8_t expect[] = {
         0xAD, 0xBE, 0xEF, 0xAA, 0xBB, 0xCC
@@ -40,11 +40,11 @@ TEST(View, IndexOperator)
 
 TEST(View, Iterators)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
+    ba::bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
 
     uint8_t expect[] = {
         0xAD, 0xBE, 0xEF, 0xAA, 0xBB, 0xCC
@@ -63,11 +63,11 @@ TEST(View, Iterators)
 
 TEST(View, ConstantIterators)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    const bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
+    const ba::bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
 
     uint8_t expect[] = {
         0xAD, 0xBE, 0xEF, 0xAA, 0xBB, 0xCC
@@ -86,11 +86,11 @@ TEST(View, ConstantIterators)
 
 TEST(View, ReverseIterators)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
+    ba::bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
 
     uint8_t expect[] = {
         0xCC, 0xBB, 0xAA, 0xEF, 0xBE, 0xAD
@@ -109,11 +109,11 @@ TEST(View, ReverseIterators)
 
 TEST(View, ConstantReverseIterators)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    const bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
+    const ba::bytearray_view view(array, 1, 6); // 0xADBEEFAABBCC
 
     uint8_t expect[] = {
         0xCC, 0xBB, 0xAA, 0xEF, 0xBE, 0xAD
@@ -132,11 +132,11 @@ TEST(View, ConstantReverseIterators)
 
 TEST(View, PushBackUint8)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
     array.push_back<uint64_t>(0xDEADBEEFAABBCCDD);
 
-    bytearray_view view(array, 1, 6);
+    ba::bytearray_view view(array, 1, 6);
 
     uint8_t expect_view[] = {
         0xAD, 0xBE, 0xEF, 0xAA, 0xBB, 0xCC, 0xFF
@@ -185,11 +185,11 @@ TEST(View, PushBackPart)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(init), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(init), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.push_back_part<uint32_t>(0xDEADBEEF, 3, endianness::big);
+        view.push_back_part<uint32_t>(0xDEADBEEF, 3, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 7);
         ASSERT_EQ(view.size(), 5);
@@ -206,11 +206,11 @@ TEST(View, PushBackPart)
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(init), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(init), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.push_back_part<uint32_t>(0xDEADBEEF, 3, endianness::little);
+        view.push_back_part<uint32_t>(0xDEADBEEF, 3, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 7);
         ASSERT_EQ(view.size(), 5);
@@ -250,12 +250,12 @@ TEST(View, PushBackMultiple1)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(init), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(init), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.push_back_multiple<uint16_t>(
-            0xDEAD, 2, endianness::big
+            0xDEAD, 2, ba::endianness::big
         );
 
         ASSERT_EQ(array.size(), 8);
@@ -273,12 +273,12 @@ TEST(View, PushBackMultiple1)
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(init), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(init), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.push_back_multiple<uint16_t>(
-            0xDEAD, 2, endianness::little
+            0xDEAD, 2, ba::endianness::little
         );
 
         ASSERT_EQ(array.size(), 8);
@@ -298,9 +298,9 @@ TEST(View, PushBackMultiple1)
 
 TEST(View, Empty)
 {
-    bytearray array{};
+    ba::bytearray array{};
 
-    bytearray_view view(array);
+    ba::bytearray_view view(array);
 
     ASSERT_TRUE(view.empty());
 
@@ -311,11 +311,11 @@ TEST(View, Empty)
 
 TEST(View, Comparison)
 {
-    bytearray array1{};
-    bytearray array2{};
+    ba::bytearray array1{};
+    ba::bytearray array2{};
 
-    bytearray_view view1(array1);
-    bytearray_view view2(array2);
+    ba::bytearray_view view1(array1);
+    ba::bytearray_view view2(array2);
 
     ASSERT_TRUE(view1 == view2);
 
@@ -354,30 +354,30 @@ TEST(View, InsertNormal)
     };
 
     {
-        bytearray array((std::byte*) initial, 4);
+        ba::bytearray array((std::byte*) initial, 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.insert<uint32_t>(1, 0xDEADBEEF, endianness::big);
+        view.insert<uint32_t>(1, 0xDEADBEEF, ba::endianness::big);
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array((std::byte*) initial, 4);
+        ba::bytearray array((std::byte*) initial, 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.insert<uint32_t>(1, 0xDEADBEEF, endianness::little);
+        view.insert<uint32_t>(1, 0xDEADBEEF, ba::endianness::little);
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_le[i]);
         }
@@ -399,30 +399,30 @@ TEST(View, InsertPart)
     };
 
     {
-        bytearray array((std::byte*) initial, 4);
+        ba::bytearray array((std::byte*) initial, 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.insert_part<uint32_t>(1, 0xDEADBEEF, 3, endianness::big);
+        view.insert_part<uint32_t>(1, 0xDEADBEEF, 3, ba::endianness::big);
 
         ASSERT_EQ(view.size(), 5);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array((std::byte*) initial, 4);
+        ba::bytearray array((std::byte*) initial, 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
-        view.insert_part<uint32_t>(1, 0xDEADBEEF, 3, endianness::little);
+        view.insert_part<uint32_t>(1, 0xDEADBEEF, 3, ba::endianness::little);
 
         ASSERT_EQ(view.size(), 5);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_le[i]);
         }
@@ -444,40 +444,40 @@ TEST(View, InsertMultiple1)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.insert_multiple<uint16_t>(
             1,
             0xDEAD,
             2,
-            endianness::big
+            ba::endianness::big
         );
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.insert_multiple<uint16_t>(
             1,
             0xDEAD,
             2,
-            endianness::little
+            ba::endianness::little
         );
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_le[i]);
         }
@@ -504,40 +504,40 @@ TEST(View, InsertMultiple2)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.insert_multiple(
             1,
             insertionData.begin(),
             insertionData.end(),
-            endianness::big
+            ba::endianness::big
         );
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 4);
 
-        bytearray_view view(array, 1, 2);
+        ba::bytearray_view view(array, 1, 2);
 
         view.insert_multiple(
             1,
             insertionData.begin(),
             insertionData.end(),
-            endianness::little
+            ba::endianness::little
         );
 
         ASSERT_EQ(view.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < view.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < view.size(); ++i)
         {
             ASSERT_EQ(uint8_t(view[i]), expect_le[i]);
         }
@@ -550,27 +550,27 @@ TEST(View, ReadUint8)
     const uint8_t value = 0xDE;
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint8_t>(value, endianness::big);
+        view.push_back<uint8_t>(value, ba::endianness::big);
 
         ASSERT_EQ(
-            view.read<uint8_t>(0, endianness::big),
+            view.read<uint8_t>(0, ba::endianness::big),
             value
         );
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint8_t>(value, endianness::little);
+        view.push_back<uint8_t>(value, ba::endianness::little);
 
         ASSERT_EQ(
-            view.read<uint8_t>(0, endianness::little),
+            view.read<uint8_t>(0, ba::endianness::little),
             value
         );
     }
@@ -581,27 +581,27 @@ TEST(View, ReadUint32)
     const uint32_t value = 0xDEADBEEF;
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint32_t>(value, endianness::big);
+        view.push_back<uint32_t>(value, ba::endianness::big);
 
         ASSERT_EQ(
-            view.read<uint32_t>(0, endianness::big),
+            view.read<uint32_t>(0, ba::endianness::big),
             value
         );
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint32_t>(value, endianness::little);
+        view.push_back<uint32_t>(value, ba::endianness::little);
 
         ASSERT_EQ(
-            view.read<uint32_t>(0, endianness::little),
+            view.read<uint32_t>(0, ba::endianness::little),
             value
         );
     }
@@ -612,27 +612,27 @@ TEST(View, ReadUint64)
     const uint64_t value = 0xDEADBEEFFFEEFFEE;
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint64_t>(value, endianness::big);
+        view.push_back<uint64_t>(value, ba::endianness::big);
 
         ASSERT_EQ(
-            view.read<uint64_t>(0, endianness::big),
+            view.read<uint64_t>(0, ba::endianness::big),
             value
         );
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<uint64_t>(value, endianness::little);
+        view.push_back<uint64_t>(value, ba::endianness::little);
 
         ASSERT_EQ(
-            view.read<uint64_t>(0, endianness::little),
+            view.read<uint64_t>(0, ba::endianness::little),
             value
         );
     }
@@ -643,27 +643,27 @@ TEST(View, ReadInt64)
     const int64_t value = 0xDEADBEEFFFEEFFEE;
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<int64_t>(value, endianness::big);
+        view.push_back<int64_t>(value, ba::endianness::big);
 
         ASSERT_EQ(
-            view.read<int64_t>(0, endianness::big),
+            view.read<int64_t>(0, ba::endianness::big),
             value
         );
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back<int64_t>(value, endianness::little);
+        view.push_back<int64_t>(value, ba::endianness::little);
 
         ASSERT_EQ(
-            view.read<int64_t>(0, endianness::little),
+            view.read<int64_t>(0, ba::endianness::little),
             value
         );
     }
@@ -704,26 +704,26 @@ TEST(View, ReadCustom)
     memcpy(value.additional, "Some actual long additional message", 35);
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back(value, endianness::big);
+        view.push_back(value, ba::endianness::big);
 
         ASSERT_TRUE(
-            view.read<CustomStructDerived>(0, endianness::big) == value
+            view.read<CustomStructDerived>(0, ba::endianness::big) == value
         );
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back(value, endianness::little);
+        view.push_back(value, ba::endianness::little);
 
         ASSERT_TRUE(
-            view.read<CustomStructDerived>(0, endianness::little) == value
+            view.read<CustomStructDerived>(0, ba::endianness::little) == value
         );
     }
 }
@@ -733,22 +733,22 @@ TEST(View, ReadPart)
     uint64_t value = 0x00ADBEEFFFEEAABB;
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back_part(value, 7, endianness::big);
+        view.push_back_part(value, 7, ba::endianness::big);
 
-        ASSERT_EQ(value, view.read_part<uint64_t>(0, 7, endianness::big));
+        ASSERT_EQ(value, view.read_part<uint64_t>(0, 7, ba::endianness::big));
     }
 
     {
-        bytearray data{};
+        ba::bytearray data{};
 
-        bytearray_view view(data, 0, 0);
+        ba::bytearray_view view(data, 0, 0);
 
-        view.push_back_part(value, 7, endianness::little);
+        view.push_back_part(value, 7, ba::endianness::little);
 
-        ASSERT_EQ(value, view.read_part<uint64_t>(0, 7, endianness::little));
+        ASSERT_EQ(value, view.read_part<uint64_t>(0, 7, ba::endianness::little));
     }
 }

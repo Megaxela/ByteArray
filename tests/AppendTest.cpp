@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include <bytearray.hpp>
+#include <ba/bytearray.hpp>
 
 TEST(Append, InitializerListUint8)
 {
@@ -14,30 +14,30 @@ TEST(Append, InitializerListUint8)
     };
 
     {
-        bytearray b(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray b(reinterpret_cast<std::byte*>(data), 8);
 
         b.push_back_multiple<uint8_t>({
             0xDE, 0xAD, 0xBE, 0xEF
-        }, endianness::big);
+        }, ba::endianness::big);
 
         ASSERT_EQ(b.size(), 12);
 
-        for (bytearray<>::size_type i = 0; i < b.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < b.size(); ++i)
         {
             ASSERT_EQ(uint8_t(b[i]), expect[i]);
         }
     }
 
     {
-        bytearray b(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray b(reinterpret_cast<std::byte*>(data), 8);
 
         b.push_back_multiple<uint8_t>({
             0xDE, 0xAD, 0xBE, 0xEF
-        }, endianness::little);
+        }, ba::endianness::little);
 
         ASSERT_EQ(b.size(), 12);
 
-        for (bytearray<>::size_type i = 0; i < b.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < b.size(); ++i)
         {
             ASSERT_EQ(uint8_t(b[i]), expect[i]);
         }
@@ -61,30 +61,30 @@ TEST(Append, InitializerListUint32)
     };
 
     {
-        bytearray b(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray b(reinterpret_cast<std::byte*>(data), 8);
 
         b.push_back_multiple<uint32_t>({
             0xDEADBEEF, 0xDEADBEEF
-        }, endianness::big);
+        }, ba::endianness::big);
 
         ASSERT_EQ(b.size(), 16);
 
-        for (bytearray<>::size_type i = 0; i < b.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < b.size(); ++i)
         {
             ASSERT_EQ(uint8_t(b[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray b(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray b(reinterpret_cast<std::byte*>(data), 8);
 
         b.push_back_multiple<uint32_t>({
             0xDEADBEEF, 0xDEADBEEF
-        }, endianness::little);
+        }, ba::endianness::little);
 
         ASSERT_EQ(b.size(), 16);
 
-        for (bytearray<>::size_type i = 0; i < b.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < b.size(); ++i)
         {
             ASSERT_EQ(uint8_t(b[i]), expect_le[i]);
         }
@@ -101,13 +101,13 @@ TEST(Append, Range)
         0xDE, 0xAD, 0xBE, 0xEF
     };
 
-    bytearray b(reinterpret_cast<std::byte*>(data), 8);
+    ba::bytearray b(reinterpret_cast<std::byte*>(data), 8);
 
     b.push_back_multiple(appendable, appendable + 4);
 
     ASSERT_EQ(b.size(), 12);
 
-    for (bytearray<>::size_type i = 0; i < b.size(); ++i)
+    for (ba::bytearray<>::size_type i = 0; i < b.size(); ++i)
     {
         if (i >= 8)
         {
@@ -137,26 +137,26 @@ TEST(Append, Number8bit)
     };
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint8_t>(0xDE, endianness::big);
+        array.push_back<uint8_t>(0xDE, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 9);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint8_t>(0xDE, endianness::little);
+        array.push_back<uint8_t>(0xDE, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 9);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_le[i]);
         }
@@ -180,26 +180,26 @@ TEST(Append, Number16bit)
     };
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint16_t>(0xDEAD, endianness::big);
+        array.push_back<uint16_t>(0xDEAD, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 10);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint16_t>(0xDEAD, endianness::little);
+        array.push_back<uint16_t>(0xDEAD, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 10);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_le[i]);
         }
@@ -223,26 +223,26 @@ TEST(Append, Number32bit)
     };
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint32_t>(0xDEADBEEF, endianness::big);
+        array.push_back<uint32_t>(0xDEADBEEF, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 12);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint32_t>(0xDEADBEEF, endianness::little);
+        array.push_back<uint32_t>(0xDEADBEEF, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 12);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_le[i]);
         }
@@ -266,26 +266,26 @@ TEST(Append, Number64bit)
     };
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint64_t>(0xDEADBEEFDEADBEEF, endianness::big);
+        array.push_back<uint64_t>(0xDEADBEEFDEADBEEF, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 16);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<std::byte*>(data), 8);
+        ba::bytearray array(reinterpret_cast<std::byte*>(data), 8);
 
-        array.push_back<uint64_t>(0xDEADBEEFDEADBEEF, endianness::little);
+        array.push_back<uint64_t>(0xDEADBEEFDEADBEEF, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 16);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expecting_le[i]);
         }

@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <bytearray_processor.hpp>
 
 int main(int argc, char** argv)
 {

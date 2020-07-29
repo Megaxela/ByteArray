@@ -1,6 +1,5 @@
 #include <benchmark/benchmark.h>
-#include <bytearray.hpp>
-
+#include <ba/bytearray.hpp>
 
 template<typename T>
 static void append(benchmark::State& state)
@@ -9,7 +8,7 @@ static void append(benchmark::State& state)
 
     auto count = resultSize / sizeof(T);
 
-    bytearray array;
+    ba::bytearray array;
 
     for (auto _ : state)
     {
@@ -31,7 +30,7 @@ static void appendMultiple(benchmark::State& state)
 
     auto count = resultSize / sizeof(T);
 
-    bytearray array;
+    ba::bytearray array;
 
     for (auto _ : state)
     {
@@ -51,7 +50,7 @@ static void appendByteArray(benchmark::State& state)
 
     data.resize(size, std::byte(0x00));
 
-    bytearray array;
+    ba::bytearray array;
 
     for (auto _ : state)
     {
@@ -71,7 +70,7 @@ static void appendPart(benchmark::State& state)
 
     auto count = size / part;
 
-    bytearray array;
+    ba::bytearray array;
 
     for (auto _ : state)
     {

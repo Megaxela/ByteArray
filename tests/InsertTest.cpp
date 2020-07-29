@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <bytearray.hpp>
+#include <ba/bytearray.hpp>
 
 TEST(Insert, Normal)
 {
@@ -16,26 +16,26 @@ TEST(Insert, Normal)
     };
 
     {
-        bytearray array((std::byte*) initial, 2);
+        ba::bytearray array((std::byte*) initial, 2);
 
-        array.insert<uint32_t>(1, 0xDEADBEEF, endianness::big);
+        array.insert<uint32_t>(1, 0xDEADBEEF, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array((std::byte*) initial, 2);
+        ba::bytearray array((std::byte*) initial, 2);
 
-        array.insert<uint32_t>(1, 0xDEADBEEF, endianness::little);
+        array.insert<uint32_t>(1, 0xDEADBEEF, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_le[i]);
         }
@@ -57,26 +57,26 @@ TEST(Insert, Part)
     };
 
     {
-        bytearray array((std::byte*) initial, 2);
+        ba::bytearray array((std::byte*) initial, 2);
 
-        array.insert_part<uint32_t>(1, 0xDEADBEEF, 3, endianness::big);
+        array.insert_part<uint32_t>(1, 0xDEADBEEF, 3, ba::endianness::big);
 
         ASSERT_EQ(array.size(), 5);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array((std::byte*) initial, 2);
+        ba::bytearray array((std::byte*) initial, 2);
 
-        array.insert_part<uint32_t>(1, 0xDEADBEEF, 3, endianness::little);
+        array.insert_part<uint32_t>(1, 0xDEADBEEF, 3, ba::endianness::little);
 
         ASSERT_EQ(array.size(), 5);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_le[i]);
         }
@@ -98,36 +98,36 @@ TEST(Insert, Multiple1)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
 
         array.insert_multiple<uint16_t>(
             1,
             0xDEAD,
             2,
-            endianness::big
+            ba::endianness::big
         );
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
 
         array.insert_multiple<uint16_t>(
             1,
             0xDEAD,
             2,
-            endianness::little
+            ba::endianness::little
         );
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_le[i]);
         }
@@ -154,36 +154,36 @@ TEST(Insert, Multiple2)
     };
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
 
         array.insert_multiple(
             1,
             insertionData.begin(),
             insertionData.end(),
-            endianness::big
+            ba::endianness::big
         );
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_be[i]);
         }
     }
 
     {
-        bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
+        ba::bytearray array(reinterpret_cast<const std::byte*>(initial), 2);
 
         array.insert_multiple(
             1,
             insertionData.begin(),
             insertionData.end(),
-            endianness::little
+            ba::endianness::little
         );
 
         ASSERT_EQ(array.size(), 6);
 
-        for (bytearray<>::size_type i = 0; i < array.size(); ++i)
+        for (ba::bytearray<>::size_type i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(uint8_t(array[i]), expect_le[i]);
         }

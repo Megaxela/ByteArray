@@ -11,13 +11,10 @@ if (${BYTEARRAY_BUILD_TESTS})
 endif()
 
 add_library(bytearray STATIC
-    include/bytearray_processor.hpp
-    include/bytearray.hpp
-    include/bytearray_view.hpp
+        include/ba/bytearray_processor.hpp
+        include/ba/bytearray.hpp
+        include/ba/bytearray_view.hpp
 )
 
-target_include_directories(bytearray
-    PUBLIC include
-)
-
+target_include_directories(bytearray PUBLIC include)
 set_target_properties(bytearray PROPERTIES LINKER_LANGUAGE CXX)

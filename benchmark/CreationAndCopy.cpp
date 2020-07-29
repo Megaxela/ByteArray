@@ -1,11 +1,11 @@
 #include <benchmark/benchmark.h>
-#include <ByteArray.hpp>
+#include <ba/bytearray.hpp>
 
 static void creationEmpty(benchmark::State& state)
 {
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(ByteArray());
+        benchmark::DoNotOptimize(ba::bytearray());
     }
 }
 
@@ -13,11 +13,11 @@ static void creationFromArrayOfBytes(benchmark::State& state)
 {
     auto size = state.range(0);
 
-    auto* data = new uint8_t[size];
+    auto* data = new std::byte[size];
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(ByteArray(data, static_cast<ByteArray::size_type>(size)));
+        benchmark::DoNotOptimize(ba::bytearray(data, size));
     }
 
     delete[] data;
@@ -27,25 +27,25 @@ static void creationFromArrayOfBytes(benchmark::State& state)
 
 static void copyEmpty(benchmark::State& state)
 {
-    ByteArray byteArray;
+    ba::bytearray byteArray;
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(ByteArray(byteArray));
+        benchmark::DoNotOptimize(ba::bytearray(byteArray));
     }
 }
 
 static void copyWithData(benchmark::State& state)
 {
-    auto size = static_cast<ByteArray::size_type>(state.range(0));
+    auto size = static_cast<ba::bytearray<>::size_type>(state.range(0));
 
-    ByteArray byteArray(size);
+    ba::bytearray byteArray(size);
 
-    byteArray.appendMultiple<uint8_t>(0x00, size);
+    byteArray.push_back_multiple<uint8_t>(0x00, size);
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(ByteArray(byteArray));
+        benchmark::DoNotOptimize(ba::bytearray(byteArray));
     }
 
     state.SetComplexityN(size);

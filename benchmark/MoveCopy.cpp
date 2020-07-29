@@ -1,9 +1,9 @@
 #include <benchmark/benchmark.h>
-#include <bytearray.hpp>
+#include <ba/bytearray.hpp>
 
 static void copy(benchmark::State& state)
 {
-    bytearray array;
+    ba::bytearray array;
 
     auto resultSize = state.range(0);
 
@@ -13,7 +13,7 @@ static void copy(benchmark::State& state)
 
     for (auto _ : state)
     {
-        benchmark::DoNotOptimize(bytearray<>(array));
+        benchmark::DoNotOptimize(ba::bytearray<>(array));
     }
 
     state.SetComplexityN(resultSize);
@@ -21,7 +21,7 @@ static void copy(benchmark::State& state)
 
 static void move(benchmark::State& state)
 {
-    bytearray array;
+    ba::bytearray array;
 
     auto resultSize = state.range(0);
 
@@ -29,7 +29,7 @@ static void move(benchmark::State& state)
         0xFF, resultSize
     );
 
-    bytearray copy;
+    ba::bytearray copy;
 
     for (auto _ : state)
     {

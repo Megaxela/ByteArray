@@ -1,10 +1,10 @@
 
 #include <gtest/gtest.h>
-#include <bytearray.hpp>
+#include <ba/bytearray.hpp>
 
 TEST(Constructors, Default)
 {
-    bytearray b{};
+    ba::bytearray b{};
 
     ASSERT_EQ(b.size(), 0);
     ASSERT_EQ(b.capacity(), 0);
@@ -12,7 +12,7 @@ TEST(Constructors, Default)
 
 TEST(Constructors, InitialFill)
 {
-    bytearray b(1024);
+    ba::bytearray b(1024);
 
     ASSERT_EQ(b.size(), 1024);
     ASSERT_EQ(b.capacity(), 1024);
@@ -20,7 +20,7 @@ TEST(Constructors, InitialFill)
 
 TEST(Constructors, InitialCapacity)
 {
-    bytearray b{};
+    ba::bytearray b{};
     b.reserve(1024);
 
     ASSERT_EQ(b.size(), 0);
@@ -36,7 +36,7 @@ TEST(Constructors, FromByteArray)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
+    ba::bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
 
     ASSERT_EQ(b.size(), 32);
     ASSERT_EQ(b.capacity(), 32);
@@ -56,9 +56,9 @@ TEST(Constructors, Copy)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
+    ba::bytearray b(reinterpret_cast<std::byte*>(byteArray), 32);
 
-    bytearray copy = b;
+    ba::bytearray copy = b;
 
     for (decltype(b)::size_type i = 0; i < b.size(); ++i)
     {
@@ -75,7 +75,7 @@ TEST(Constructors, Move)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     };
 
-    bytearray m(reinterpret_cast<std::byte*>(byteArray), 32);
+    ba::bytearray m(reinterpret_cast<std::byte*>(byteArray), 32);
 
     auto b = std::move(m);
 
