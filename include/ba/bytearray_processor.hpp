@@ -173,6 +173,7 @@ public:
         auto count = std::count_if(sv.begin(), sv.end(), validator);
 
         m_container.clear();
+        m_container.reserve(count);
 
         bool isFirst = true;
         uint8_t firstValue = 0;
