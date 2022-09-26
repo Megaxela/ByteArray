@@ -1,8 +1,18 @@
 #include <gtest/gtest.h>
 #include <ba/bytearray.hpp>
+#include <ba/bytearray_reader.hpp>
 
-TEST(Read, Uint8)
-{
+TEST(Read, ConstVectorForReader) {
+    const std::vector<std::uint8_t> data = {0xDE, 0xAD, 0xBE, 0xEF};
+
+    ba::bytearray_reader reader(data);
+
+    ASSERT_EQ(reader.read<uint8_t>(0, ba::endianness::big), 0xDE);
+    ASSERT_EQ(reader.read<uint16_t>(0, ba::endianness::big), 0xDEAD);
+    ASSERT_EQ(reader.read<uint32_t>(0, ba::endianness::big), 0xDEADBEEF);
+}
+
+TEST(Read, Uint8) {
     const uint8_t value = 0xDE;
 
     {
@@ -10,10 +20,7 @@ TEST(Read, Uint8)
 
         data.push_back<uint8_t>(value, ba::endianness::big);
 
-        ASSERT_EQ(
-            data.read<uint8_t>(0, ba::endianness::big),
-            value
-        );
+        ASSERT_EQ(data.read<uint8_t>(0, ba::endianness::big), value);
     }
 
     {
@@ -21,15 +28,11 @@ TEST(Read, Uint8)
 
         data.push_back<uint8_t>(value, ba::endianness::little);
 
-        ASSERT_EQ(
-            data.read<uint8_t>(0, ba::endianness::little),
-            value
-        );
+        ASSERT_EQ(data.read<uint8_t>(0, ba::endianness::little), value);
     }
 }
 
-TEST(Read, Uint32)
-{
+TEST(Read, Uint32) {
     const uint32_t value = 0xDEADBEEF;
 
     {
@@ -37,10 +40,7 @@ TEST(Read, Uint32)
 
         data.push_back<uint32_t>(value, ba::endianness::big);
 
-        ASSERT_EQ(
-            data.read<uint32_t>(0, ba::endianness::big),
-            value
-        );
+        ASSERT_EQ(data.read<uint32_t>(0, ba::endianness::big), value);
     }
 
     {
@@ -48,15 +48,11 @@ TEST(Read, Uint32)
 
         data.push_back<uint32_t>(value, ba::endianness::little);
 
-        ASSERT_EQ(
-            data.read<uint32_t>(0, ba::endianness::little),
-            value
-        );
+        ASSERT_EQ(data.read<uint32_t>(0, ba::endianness::little), value);
     }
 }
 
-TEST(Read, Uint64)
-{
+TEST(Read, Uint64) {
     const uint64_t value = 0xDEADBEEFFFEEFFEE;
 
     {
@@ -64,10 +60,7 @@ TEST(Read, Uint64)
 
         data.push_back<uint64_t>(value, ba::endianness::big);
 
-        ASSERT_EQ(
-            data.read<uint64_t>(0, ba::endianness::big),
-            value
-        );
+        ASSERT_EQ(data.read<uint64_t>(0, ba::endianness::big), value);
     }
 
     {
@@ -75,15 +68,11 @@ TEST(Read, Uint64)
 
         data.push_back<uint64_t>(value, ba::endianness::little);
 
-        ASSERT_EQ(
-            data.read<uint64_t>(0, ba::endianness::little),
-            value
-        );
+        ASSERT_EQ(data.read<uint64_t>(0, ba::endianness::little), value);
     }
 }
 
-TEST(Read, Int64)
-{
+TEST(Read, Int64) {
     const int64_t value = 0xDEADBEEFFFEEFFEE;
 
     {
@@ -91,10 +80,7 @@ TEST(Read, Int64)
 
         data.push_back<int64_t>(value, ba::endianness::big);
 
-        ASSERT_EQ(
-            data.read<int64_t>(0, ba::endianness::big),
-            value
-        );
+        ASSERT_EQ(data.read<int64_t>(0, ba::endianness::big), value);
     }
 
     {
@@ -102,15 +88,11 @@ TEST(Read, Int64)
 
         data.push_back<int64_t>(value, ba::endianness::little);
 
-        ASSERT_EQ(
-            data.read<int64_t>(0, ba::endianness::little),
-            value
-        );
+        ASSERT_EQ(data.read<int64_t>(0, ba::endianness::little), value);
     }
 }
 
-struct CustomStructBase
-{
+struct CustomStructBase {
     uint64_t a;
     uint32_t c;
     char z;
@@ -118,23 +100,16 @@ struct CustomStructBase
     char message[32];
 };
 
-struct CustomStructDerived : CustomStructBase
-{
+struct CustomStructDerived : CustomStructBase {
     char additional[64];
 
-    bool operator==(const CustomStructDerived& rhs)
-    {
-        return
-            rhs.a == a &&
-            rhs.c == c &&
-            rhs.z == z &&
-            memcmp(rhs.message, message, 32) == 0 &&
-            memcmp(rhs.additional, additional, 64) == 0;
+    bool operator==(const CustomStructDerived& rhs) {
+        return rhs.a == a && rhs.c == c && rhs.z == z && memcmp(rhs.message, message, 32) == 0 &&
+               memcmp(rhs.additional, additional, 64) == 0;
     }
 };
 
-TEST(Read, Custom)
-{
+TEST(Read, Custom) {
     CustomStructDerived value = {};
 
     value.a = 0xDEADDEADBEEFBEEF;
@@ -148,9 +123,7 @@ TEST(Read, Custom)
 
         data.push_back(value, ba::endianness::big);
 
-        ASSERT_TRUE(
-            data.read<CustomStructDerived>(0, ba::endianness::big) == value
-        );
+        ASSERT_TRUE(data.read<CustomStructDerived>(0, ba::endianness::big) == value);
     }
 
     {
@@ -158,14 +131,11 @@ TEST(Read, Custom)
 
         data.push_back(value, ba::endianness::little);
 
-        ASSERT_TRUE(
-            data.read<CustomStructDerived>(0, ba::endianness::little) == value
-        );
+        ASSERT_TRUE(data.read<CustomStructDerived>(0, ba::endianness::little) == value);
     }
 }
 
-TEST(Read, Part)
-{
+TEST(Read, Part) {
     uint64_t value = 0x00ADBEEFFFEEAABB;
 
     {

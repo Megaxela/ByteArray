@@ -16,3 +16,8 @@ target_link_libraries(bytearray_tests
         bytearray
         gtest
 )
+
+add_test(
+  NAME bytearray_tests
+  COMMAND bytearray_tests
+)

@@ -1,5 +1,10 @@
 #pragma once
 
+// ba
+#include <ba/bytearray_reader.hpp>
+#include <ba/endianness.hpp>
+
+// C++ STL
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -11,7 +16,6 @@
 #include <vector>
 
 namespace ba {
-enum class endianness { little, big };
 
 /**
  * @brief Class, that implements
@@ -20,7 +24,7 @@ enum class endianness { little, big };
  * (std::byte, uint8_t or unsigned char)
  */
 template <typename ValueType, typename Allocator>
-class bytearray_processor {
+class bytearray_processor : public bytearray_reader<ValueType, Allocator> {
 public:
     using vector = std::vector<ValueType, Allocator>;
 
@@ -117,7 +121,8 @@ public:
      * @param container Vector with type.
      */
     explicit bytearray_processor(vector& container)
-        : m_container(container) {}
+        : bytearray_reader<ValueType, Allocator>(container)
+        , m_container(container) {}
 
     /**
      * @brief Method for getting reference to internal container.
